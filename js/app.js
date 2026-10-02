@@ -1,4 +1,3 @@
-
 const formulario = document.querySelector("#formulario-busqueda");
 const inputBusqueda = document.querySelector("#busqueda");
 const mensaje = document.querySelector("#mensaje");
@@ -21,13 +20,12 @@ const obtenerPokemon = async (busqueda) => {
     altura: datos.height,
     peso: datos.weight,
     tipos: datos.types.map(({ type }) => type.name),
-  };;
+  };
 };
 
 const formatearId = (id) => {
   return String(id).padStart(3, "0");
 };
-
 
 const mostrarPokemon = (pokemon) => {
   const tiposHTML = pokemon.tipos
@@ -37,6 +35,7 @@ const mostrarPokemon = (pokemon) => {
   resultado.innerHTML = `
     <article class="pokemon">
       <p class="pokemon__numero">N.º ${formatearId(pokemon.id)}</p>
+
       <img
         class="pokemon__imagen"
         src="${pokemon.imagen}"
@@ -61,6 +60,7 @@ formulario.addEventListener("submit", async (evento) => {
   evento.preventDefault();
 
   const busqueda = inputBusqueda.value.trim().toLowerCase();
+  const botonBuscar = formulario.querySelector("button");
 
   if (!busqueda) {
     mensaje.textContent = "Introduce un nombre o número.";
@@ -71,12 +71,18 @@ formulario.addEventListener("submit", async (evento) => {
   mensaje.textContent = "Cargando...";
   resultado.innerHTML = "";
 
+  botonBuscar.disabled = true;
+
   try {
     const pokemon = await obtenerPokemon(busqueda);
 
     mostrarPokemon(pokemon);
+    inputBusqueda.value = "";
+    inputBusqueda.focus();
     mensaje.textContent = "";
   } catch (error) {
     mensaje.textContent = error.message;
+  } finally {
+    botonBuscar.disabled = false;
   }
 });
